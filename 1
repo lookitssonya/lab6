@@ -1,0 +1,107 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// Функция для отображения игрового поля
+void drawBoard(const vector<vector<string>>& board) {
+    cout << "   1  2  3" << endl;
+    // Перебор строк поля
+    for (int i = 0; i < 3; i++) {
+        cout << i + 1 << " ";
+        // Перебор столбцов поля
+        for (int j = 0; j < 3; j++) {
+            cout << "[" << board[i][j] << "]";
+        }
+        cout << endl;
+    }
+}
+// Функция для проверки победы
+bool checkWin(const vector<vector<string>>& board, string player) {
+
+    for (int i = 0; i < 3; i++) {
+        if (board[i][0] == player && board[i][1] == player && board[i][2] == player) {
+            return true;
+        }
+    }
+
+    for (int i = 0; i < 3; i++) {
+        if (board[0][i] == player && board[1][i] == player && board[2][i] == player) {
+            return true;
+        }
+    }
+
+ 
+    if ((board[0][0] == player && board[1][1] == player && board[2][2] == player) ||
+        (board[0][2] == player && board[1][1] == player && board[2][0] == player)) {
+        return true;
+    }
+
+    return false;
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    vector<vector<string>> board(3, vector<string>(3, " ")); // Создание двумерного вектора для представления игрового поля (3x3)
+
+    bool playerTurn = true;
+    bool gameOver = false;
+
+    while (!gameOver) {
+        drawBoard(board);
+
+        int row, col;
+
+        if (playerTurn) {
+            cout << "Ваша очередь. Введите номер столбца и строки (1-3): ";
+            cin >> row >> col;
+            row--;
+            col--;
+            if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != " ") {
+                cout << "Недопустимый ход. Попробуйте еще раз." << endl;
+                continue;
+            }
+            board[row][col] = "X";
+        }
+        else {
+            cout << "Очередь компьютера: \n";
+            // Случайный выбор пустой ячейки поля
+            do {
+                row = rand() % 3;
+                col = rand() % 3;
+            } while (board[row][col] != " ");
+            board[row][col] = "O";
+        }
+
+        if (checkWin(board, "X")) {
+            drawBoard(board);
+            cout << "Вы выиграли!" << endl;
+            gameOver = true;
+        }
+        else if (checkWin(board, "O")) {
+            drawBoard(board);
+            cout << "Выиграл компьютер!" << endl;
+            gameOver = true;
+        }
+        else {
+            bool boardFull = true;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (board[i][j] == " ") {
+                        boardFull = false;
+                        break;
+                    }
+                }
+            }
+            if (boardFull) {
+                drawBoard(board);
+                cout << "Ничья!" << endl;
+                gameOver = true;
+            }
+        }
+
+        playerTurn = !playerTurn;
+    }
+
+    return 0;
+}
